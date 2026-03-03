@@ -1,8 +1,10 @@
 package com.github.plimadev.onboarding_api.controller;
 
-import com.github.plimadev.onboarding_api.model.Client;
+import com.github.plimadev.onboarding_api.dto.ClientRequest;
+import com.github.plimadev.onboarding_api.dto.ClientResponse;
 import com.github.plimadev.onboarding_api.model.ClientStatus;
 import com.github.plimadev.onboarding_api.service.ClientService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,21 +18,19 @@ import java.util.List;
 public class ClientController {
 
     private final ClientService clientService;
-    
+
     @PostMapping
-    public ResponseEntity<Client> createClient(@RequestParam String fullName,
-                                               @RequestParam String email) {
-        Client client = clientService.createClient(fullName, email);
-        return ResponseEntity.status(HttpStatus.CREATED).body(client);
+    public ResponseEntity<ClientResponse> createClient(@Valid @RequestBody ClientRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(clientService.createClient(request));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Client> getClient(@PathVariable Long id) {
+    public ResponseEntity<ClientResponse> getClient(@PathVariable Long id) {
         return ResponseEntity.ok(clientService.getClient(id));
     }
 
     @GetMapping
-    public ResponseEntity<List<Client>> getAllClients(
+    public ResponseEntity<List<ClientResponse>> getAllClients(
             @RequestParam(required = false) ClientStatus status) {
         if (status != null) {
             return ResponseEntity.ok(clientService.getClientsByStatus(status));
@@ -39,12 +39,12 @@ public class ClientController {
     }
 
     @PatchMapping("/{id}/advance")
-    public ResponseEntity<Client> advanceStatus(@PathVariable Long id) {
+    public ResponseEntity<ClientResponse> advanceStatus(@PathVariable Long id) {
         return ResponseEntity.ok(clientService.advanceStatus(id));
     }
 
     @PatchMapping("/{id}/reject")
-    public ResponseEntity<Client> rejectClient(@PathVariable Long id) {
+    public ResponseEntity<ClientResponse> rejectClient(@PathVariable Long id) {
         return ResponseEntity.ok(clientService.rejectClient(id));
     }
 }
