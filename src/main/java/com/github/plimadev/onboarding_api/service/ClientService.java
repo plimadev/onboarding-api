@@ -3,6 +3,7 @@ package com.github.plimadev.onboarding_api.service;
 import com.github.plimadev.onboarding_api.dto.ClientMapper;
 import com.github.plimadev.onboarding_api.dto.ClientRequest;
 import com.github.plimadev.onboarding_api.dto.ClientResponse;
+import com.github.plimadev.onboarding_api.exception.ResourceNotFoundException;
 import com.github.plimadev.onboarding_api.model.ClientStatus;
 import com.github.plimadev.onboarding_api.repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class ClientService {
     public ClientResponse getClient(Long id) {
         return clientMapper.toResponse(
                 clientRepository.findById(id)
-                        .orElseThrow(() -> new RuntimeException("Client not found with id " + id))
+                        .orElseThrow(() -> new ResourceNotFoundException("Client not found with id " + id))  
         );
     }
 
@@ -49,7 +50,7 @@ public class ClientService {
 
     public ClientResponse advanceStatus(Long id) {
         var client = clientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client not found with id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found with id " + id));
         switch (client.getStatus()) {
             case DRAFT -> client.setStatus(ClientStatus.SUBMITTED);
             case SUBMITTED -> client.setStatus(ClientStatus.UNDER_REVIEW);
@@ -61,7 +62,7 @@ public class ClientService {
 
     public ClientResponse rejectClient(Long id) {
         var client = clientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Client not found with id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Client not found with id " + id));
         if (client.getStatus() == ClientStatus.APPROVED ||
                 client.getStatus() == ClientStatus.REJECTED) {
             throw new RuntimeException("Client cannot be rejected from status: " + client.getStatus());
