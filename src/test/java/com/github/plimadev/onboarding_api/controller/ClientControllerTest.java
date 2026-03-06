@@ -144,6 +144,7 @@ class ClientControllerTest {
                 .andExpect(jsonPath("$.status").value("SUBMITTED"));
     }
 
+
     @Test
     void rejectClient_shouldReturn200WithRejectedStatus() throws Exception {
         ClientRequest request = new ClientRequest();

@@ -122,10 +122,24 @@ class ClientServiceTest {
         client.setStatus(ClientStatus.APPROVED);
         when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
 
+
         RuntimeException exception = assertThrows(RuntimeException.class,
                 () -> clientService.advanceStatus(1L));
 
         assertTrue(exception.getMessage().contains("cannot be advanced"));
+    }
+
+    @Test
+    void advanceStatus_fromSubmitted_shouldMoveToUnderReview(){
+        client.setStatus(ClientStatus.SUBMITTED);
+        clientResponse.setStatus(ClientStatus.UNDER_REVIEW);
+
+        when(clientRepository.findById(1L)).thenReturn(Optional.of(client));
+        when(clientRepository.save(any(Client.class))).thenReturn(client);
+        when(clientMapper.toResponse(client)).thenReturn(clientResponse);
+
+        ClientResponse response = clientService.advanceStatus(1L);
+        assertEquals(ClientStatus.UNDER_REVIEW, response.getStatus());
     }
 
     // REJECT CLIENT TESTS
