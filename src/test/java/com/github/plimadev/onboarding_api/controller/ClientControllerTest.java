@@ -144,6 +144,26 @@ class ClientControllerTest {
                 .andExpect(jsonPath("$.status").value("SUBMITTED"));
     }
 
+    @Test
+    void advanceStatus_shouldMoveFromSubmittedToUnderReview() throws Exception {
+        ClientRequest request = new ClientRequest();
+        request.setFullName("John Doe");
+        request.setEmail("john@test.com");
+
+        String response = mockMvc.perform(post("/api/clients")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andReturn().getResponse().getContentAsString();
+
+        Long id = objectMapper.readTree(response).get("id").asLong();
+
+        mockMvc.perform(patch("/api/clients/{id}/advance", id))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(patch("/api/clients/{id}/advance", id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("UNDER_REVIEW"));
+    }
 
     @Test
     void rejectClient_shouldReturn200WithRejectedStatus() throws Exception {

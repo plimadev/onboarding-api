@@ -117,6 +117,8 @@ class ClientServiceTest {
         assertEquals(ClientStatus.SUBMITTED, response.getStatus());
     }
 
+
+
     @Test
     void advanceStatus_fromApproved_shouldThrowException() {
         client.setStatus(ClientStatus.APPROVED);
